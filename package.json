@@ -1,0 +1,31 @@
+{
+  "name": "engineering-career-navigator",
+  "version": "1.0.0",
+  "description": "DAA Project — Engineering Career Shortest Path Finder using Dijkstra's Algorithm",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "build": "echo 'Static project — no build step required'",
+    "open": "open http://localhost:3000 || xdg-open http://localhost:3000"
+  },
+  "keywords": [
+    "dijkstra",
+    "shortest-path",
+    "graph",
+    "career",
+    "daa",
+    "algorithm"
+  ],
+  "author": "DAA Project 2025",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

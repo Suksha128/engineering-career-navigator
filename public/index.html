@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engineering Career Navigator — DAA Project</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────────────────── -->
+<header>
+  <div class="logo">ENGG<span>/</span>NAVIGATOR</div>
+  <div class="header-title">Engineering Career Shortest Path</div>
+  <div class="badge">DAA PROJECT</div>
+</header>
+
+<!-- ── App layout ──────────────────────────────────────────────────── -->
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Find Your Career Path</h2>
+      <p>Dijkstra's Algorithm — Weighted Graph</p>
+    </div>
+
+    <div class="control-group">
+      <label>📍 Starting Point</label>
+      <select id="src-select"></select>
+    </div>
+
+    <div class="control-group">
+      <label>🎯 Career Goal</label>
+      <select id="dst-select"></select>
+    </div>
+
+    <div class="control-group">
+      <label>⚙ Domain Filter</label>
+      <select id="domain-filter">
+        <option value="all">All Domains</option>
+        <option value="software">Software Engineering</option>
+        <option value="data">Data &amp; AI/ML</option>
+        <option value="hardware">Hardware &amp; Embedded</option>
+        <option value="management">Management &amp; Product</option>
+        <option value="research">Research &amp; Academia</option>
+        <option value="cyber">Cybersecurity</option>
+        <option value="cloud">Cloud &amp; DevOps</option>
+      </select>
+      <button class="btn" onclick="runDijkstra()">▶ Find Shortest Path</button>
+      <button class="btn btn-secondary" onclick="resetGraph()">↺ Reset</button>
+    </div>
+
+    <!-- Result / instructions panel -->
+    <div class="result-panel" id="result-panel">
+      <div class="placeholder">
+        <span class="icon">🗺</span>
+        Select a <b>start node</b> and <b>goal</b>, then hit<br>
+        <b>Find Shortest Path</b> to discover the optimal<br>
+        career route with required skills.
+      </div>
+    </div>
+  </aside>
+
+  <!-- GRAPH CANVAS -->
+  <main class="graph-area" id="graph-area">
+
+    <!-- Toolbar -->
+    <div class="graph-toolbar">
+      <button class="tool-btn" onclick="zoomIn()">＋ Zoom</button>
+      <button class="tool-btn" onclick="zoomOut()">－ Zoom</button>
+      <button class="tool-btn" onclick="resetView()">⊡ Fit</button>
+      <button class="tool-btn" onclick="toggleAlgo()">∑ Algo Steps</button>
+    </div>
+
+    <!-- Stats badge -->
+    <div class="graph-info">
+      <div class="stat">Nodes: <span id="node-count">0</span></div>
+      <div class="stat">Edges: <span id="edge-count">0</span></div>
+      <div class="stat">Domain: <span id="domain-shown">All</span></div>
+    </div>
+
+    <!-- SVG graph -->
+    <svg id="graph-svg">
+      <defs>
+        <!-- Default edge arrow -->
+        <marker id="arrow" markerWidth="8" markerHeight="8"
+                refX="16" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#2a2a3a"/>
+        </marker>
+        <!-- Path-highlight edge arrow -->
+        <marker id="arrow-path" markerWidth="8" markerHeight="8"
+                refX="16" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#00e5ff"/>
+        </marker>
+        <!-- Glow filter for path nodes/edges -->
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g id="graph-root">
+        <g id="edges-layer"></g>
+        <g id="nodes-layer"></g>
+      </g>
+    </svg>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#00e5ff"></div>Shortest Path
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#7c3aed"></div>Software
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#f59e0b"></div>Data/AI
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#10b981"></div>Hardware
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#ef4444"></div>Cybersec
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#8b5cf6"></div>Cloud
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#06b6d4"></div>Management
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#d97706"></div>Research
+      </div>
+    </div>
+
+    <!-- Algo steps panel (toggle with ∑ button) -->
+    <div class="algo-panel" id="algo-panel">
+      <h4>Dijkstra Steps</h4>
+      <div id="algo-steps"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── Tooltip ──────────────────────────────────────────────────────── -->
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-name"   id="tt-name"></div>
+  <div class="tooltip-domain" id="tt-domain"></div>
+  <div class="tooltip-skills" id="tt-skills"></div>
+</div>
+
+<!-- ── Scripts (order matters) ────────────────────────────────────── -->
+<script src="graph-data.js"></script>      <!-- NODES, EDGES_RAW, DOMAIN_COLORS   -->
+<script src="dijkstra.js"></script>        <!-- buildGraph(), dijkstra()           -->
+<script src="graph-renderer.js"></script>  <!-- renderGraph(), pan/zoom, tooltip   -->
+<script src="ui.js"></script>              <!-- populateSelects(), runDijkstra()   -->
+
+<!-- ── Boot ───────────────────────────────────────────────────────── -->
+<script>
+  window.addEventListener('load', () => {
+    currentGraph = buildGraph(NODES, EDGES_RAW);  // build adjacency list
+    initPositions(NODES);                          // assign x,y to every node
+    populateSelects();                             // fill the two dropdowns
+    renderGraph('all', []);                        // first render
+    wireGraphInteractions();                       // attach pan/zoom listeners
+    resetView();                                   // fit graph to viewport
+  });
+</script>
+
+</body>
+</html>
