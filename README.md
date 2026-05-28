@@ -1,6 +1,6 @@
-# Engineering Career Navigator 🗺
+# Engineering Career Navigator
 
-**DAA Project 2025** — Dijkstra's Shortest Path Algorithm applied to Engineering Career Route Finding
+Dijkstra's Shortest Path Algorithm applied to Engineering Career Route Finding
 
 ---
 
@@ -145,8 +145,3 @@ All edge weights are **strictly positive** (w ∈ {1…7}), satisfying Dijkstra'
 - **Fonts** — Google Fonts (Space Mono, Syne, DM Sans)
 - **No external JS dependencies** on the frontend
 
----
-
-## License
-
-MIT — DAA Project 2025
